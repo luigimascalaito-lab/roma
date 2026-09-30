@@ -1,10 +1,10 @@
 // Service worker: guscio dell'app offline + audioguide scaricate a richiesta.
-const SHELL = 'romagnole-shell-v4';
+const SHELL = 'romagnole-shell-v7';
 const FONTS = 'romagnole-fonts-v1';
 const AUDIO = 'romagnole-audio-v1';
 const SHELL_FILES = [
   './', './index.html', './manifest.webmanifest',
-  './img/titolo.jpg', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png', './icons/apple-touch-icon.png',
+  './foto/p1.jpg', './foto/p2.jpg', './foto/p3.jpg', './foto/p4.jpg', './foto/p5.jpg', './foto/p6.jpg', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png', './icons/apple-touch-icon.png',
   './biglietti/mara-1.jpg',
   './biglietti/mara-2.jpg',
   './biglietti/flavia-1.jpg',
@@ -41,7 +41,7 @@ async function rangeFromCache(request, cached) {
     status: 206,
     statusText: 'Partial Content',
     headers: {
-      'Content-Type': 'audio/mpeg',
+      'Content-Type': 'audio/mp4',
       'Accept-Ranges': 'bytes',
       'Content-Length': String(end - start + 1),
       'Content-Range': `bytes ${start}-${end}/${buf.byteLength}`

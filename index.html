@@ -72,6 +72,13 @@ header.top { padding-top: calc(14px + env(safe-area-inset-top, 0px)); }
   border: 1px solid var(--ink); border-radius: 6px; padding: 14px 14px 12px;
   display: grid; gap: 4px;
 }
+.targa-in { justify-items: center; text-align: center; }
+.faces { display: flex; justify-content: center; padding-bottom: 6px; }
+.faces img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background: var(--line);
+  border: 3px solid var(--surface); box-shadow: 0 0 0 1.5px var(--red); margin-left: -8px; }
+.faces img:first-child { margin-left: 0; }
+.faces img:nth-child(3n+2) { box-shadow: 0 0 0 1.5px var(--gold); }
+.faces img:nth-child(3n) { box-shadow: 0 0 0 1.5px var(--green); }
 .titolo { display: block; width: 100%; height: auto; border-radius: 4px; background: #F7F1E3; }
 .targa-in:has(.titolo) { padding: 6px 6px 10px; gap: 8px; }
 .targa .rione { text-align: center; }
@@ -260,8 +267,9 @@ nav.tabs {
 <header class="top wrap">
   <div class="targa">
     <div class="targa-in">
-      <h1 class="sr">6 romagnole a Roma</h1>
-      <img class="titolo" src="img/titolo.jpg" width="1200" height="655" alt="6 romagnole a Roma. Viaggi e sorrisi. Sei donne sorridenti davanti a Colosseo, San Pietro e Fontana di Trevi.">
+      <div class="faces" aria-hidden="true"><img src="foto/p1.jpg" alt="" width="60" height="60"><img src="foto/p2.jpg" alt="" width="60" height="60"><img src="foto/p3.jpg" alt="" width="60" height="60"><img src="foto/p4.jpg" alt="" width="60" height="60"><img src="foto/p5.jpg" alt="" width="60" height="60"><img src="foto/p6.jpg" alt="" width="60" height="60"></div>
+      <h1>6 romagnole a Roma</h1>
+      <p class="sub">Tre giorni, dodici piedi, nessuna scusa.</p>
       <div class="rione">2–4 ottobre 2026</div>
     </div>
   </div>
@@ -329,15 +337,16 @@ nav.tabs {
 const maps = (q) => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
 
 const AUDIO = {
-  'colosseo':               { t: 'Colosseo', mb: 2.4 },
-  'piazza-di-spagna':       { t: 'Piazza di Spagna e Trinità dei Monti', mb: 3.3 },
-  'san-pietro-in-vincoli':  { t: 'San Pietro in Vincoli', mb: 4.0 },
-  'pantheon':               { t: 'Pantheon', mb: 2.1 },
-  'san-luigi-dei-francesi': { t: 'San Luigi dei Francesi', mb: 3.1 },
-  'navona':                 { t: 'Piazza Navona', mb: 1.8 },
-  'campo-de-fiori':         { t: "Campo de' Fiori", mb: 3.1 },
-  'bocca-della-verita':     { t: 'Bocca della Verità', mb: 3.1 },
-  'castel-sant-angelo':     { t: "Castel Sant'Angelo", mb: 5.8 }
+  'colosseo':               { t: 'Colosseo', mb: 1.8 },
+  'piazza-di-spagna':       { t: 'Piazza di Spagna e Trinità dei Monti', mb: 2.4 },
+  'san-pietro-in-vincoli':  { t: 'San Pietro in Vincoli', mb: 2.9 },
+  'pantheon':               { t: 'Pantheon', mb: 1.6 },
+  'san-luigi-dei-francesi': { t: 'San Luigi dei Francesi', mb: 2.3 },
+  'navona':                 { t: 'Piazza Navona', mb: 1.3 },
+  'campo-de-fiori':         { t: "Campo de' Fiori", mb: 2.3 },
+  'bocca-della-verita':     { t: 'Bocca della Verità', mb: 2.3 },
+  'san-pietro':             { t: 'Basilica di San Pietro', mb: 4.6 },
+  'castel-sant-angelo':     { t: "Castel Sant'Angelo", mb: 4.2 }
 };
 
 const DAYS = [
@@ -454,11 +463,10 @@ const DAYS = [
         note: 'Il BIT costa €1,50 ed è valido 100 minuti. In alternativa usate direttamente Tap & Go con la carta contactless.',
         links: [['ATAC · biglietti BIT', 'https://www.atac.roma.it/biglietti-e-abbonamenti/bit']] },
       { id: 'd-conc', title: 'Via della Conciliazione', desc: 'Prima di entrare, percorretela lentamente: è una parte importante della visita. La prospettiva verso la Basilica e il colonnato del Bernini è spettacolare.' },
-      { id: 'd-basilica', title: 'Basilica di San Pietro', tags: [['free', 'Ingresso gratuito'], ['book', 'Meglio prima delle 9:30']],
+      { id: 'd-basilica', title: 'Basilica di San Pietro', tags: [['free', 'Ingresso gratuito'], ['book', 'Meglio prima delle 9:30']], audio: 'san-pietro',
         desc: 'Dal 1° giugno 2026 la Basilica è aperta tutti i giorni dalle 7:00 alle 20:00, con ultimo accesso alle 19:15, compatibilmente con i controlli di sicurezza. La domenica possono esserci code importanti.',
         seeTitle: 'Da vedere assolutamente', see: ['Pietà di Michelangelo', 'Baldacchino del Bernini', 'Altare papale', 'Cattedra di San Pietro', 'Monumento ad Alessandro VII', 'cupola vista dall’interno', 'statue e cappelle laterali', 'tomba di San Giovanni Paolo II'],
         tip: ['Abbigliamento', 'Spalle e ginocchia devono essere coperte, anche per gli uomini: tenete in borsa una sciarpa leggera. Portate poche cose per facilitare i controlli di sicurezza.'],
-        note: "L'audioguida digitale è inclusa nel biglietto della Cupola.",
         links: [['Orari della Basilica', 'https://www.basilicasanpietro.va/it/news/nuovo-orario-di-apertura-della-basilica-di-san-pietro']] },
       { id: 'd-cupola', title: 'Cupola di San Pietro', tags: [['pay', 'A pagamento'], ['time', '7:30–17:00']],
         desc: 'Aperta anche la domenica; l’orario invernale ufficiale è 7:30–17:00. Scegliete la Cupola con ascensore: elimina una parte della salita, ma il tratto finale resta a piedi. Il biglietto comprende anche l’accesso alla Basilica e l’audioguida digitale.',
@@ -695,7 +703,7 @@ function syncPlayingButtons() {
 function playAudio(key) {
   if (currentKey === key) { audioEl.paused ? audioEl.play() : audioEl.pause(); return; }
   currentKey = key;
-  audioEl.src = 'audio/' + key + '.mp3';
+  audioEl.src = 'audio/' + key + '.mp4';
   pTitle.replaceChildren(AUDIO[key].t, h('small', null, 'Audioguida'));
   player.hidden = false;
   pRange.value = 0; pCur.textContent = '0:00'; pDur.textContent = '…';
@@ -730,7 +738,7 @@ setPlayIcon(false);
 
 /* ================= AUDIO OFFLINE ================= */
 const swOk = 'serviceWorker' in navigator && 'caches' in window;
-const audioUrl = (k) => new URL('audio/' + k + '.mp3', location.href).pathname;
+const audioUrl = (k) => new URL('audio/' + k + '.mp4', location.href).pathname;
 let swReady = false;
 
 async function cachedSet() {
@@ -756,7 +764,7 @@ async function toggleOffline(k) {
   if (b.dataset.state === 'on') { await c.delete(audioUrl(k)); return refreshOfflineUI(); }
   b.disabled = true; b.replaceChildren('Scarico…');
   try {
-    const r = await fetch('audio/' + k + '.mp3', { cache: 'no-store' });
+    const r = await fetch('audio/' + k + '.mp4', { cache: 'no-store' });
     if (!r.ok) throw new Error(r.status);
     await c.put(audioUrl(k), r);
   } catch (e) { b.replaceChildren('Riprova'); b.disabled = false; return; }

@@ -11,7 +11,7 @@ Il modo piu' rapido, senza account tecnici:
 In alternativa: GitHub Pages, Cloudflare Pages o qualunque hosting https.
 Condividete il link alle altre cinque: ognuna la installa dal proprio telefono.
 
-Dopo l'installazione: Utile > Audioguide offline > "Scarica tutte" (circa 33 MB, meglio con il wifi).
+Dopo l'installazione: Utile > Audioguide offline > "Scarica tutte" (circa 26 MB, meglio con il wifi).
 
 Per cambiare un testo: aprite index.html e modificate i dati in alto nello script (DAYS).
-Se modificate i file, cambiate il numero di versione in sw.js (romagnole-shell-v4 > v5).
+Se modificate i file, cambiate il numero di versione in sw.js (romagnole-shell-v7 > v8).
