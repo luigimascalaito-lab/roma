@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>6 romagnole a Roma</title>
+<meta name="description" content="Programma di viaggio a Roma, 2-4 ottobre, con mappe e audioguide.">
+<meta name="theme-color" content="#1F4A38">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Rozha+One&display=swap">
+<style>
+/* Layout: una colonna stretta da telefono. In alto la targa stradale romana con il titolo,
+   sotto tre giorni a schede; ogni tappa è una riga di una linea del tempo verticale. */
+:root {
+  --bg: #EDEFE9;          /* marmo con un fondo verde */
+  --surface: #F9FAF6;
+  --ink: #16251E;
+  --muted: #586860;
+  --line: #CDD4C8;
+  --green: #1F4A38;       /* verde dei nasoni */
+  --green-ink: #F3F6EF;
+  --red: #B4281F;         /* rosso pompeiano */
+  --red-ink: #FFFFFF;
+  --gold: #D9A21F;        /* giallo Roma */
+  --gold-soft: #F4E6BE;
+  --tip-bg: #F3EBD0;
+  --ta: #2C7A5B;
+  --display: 'Rozha One', 'Times New Roman', serif;
+  --body: 'Figtree', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --gutter: 16px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1914; --surface: #16251E; --ink: #E8EEE4; --muted: #9DADA3; --line: #2A3D33;
+    --green: #2E6B52; --green-ink: #F3F6EF; --red: #E5604F; --red-ink: #1C0B08; --gold: #E8B84A;
+    --gold-soft: #3A3217; --tip-bg: #2B2A16; --ta: #57B58E; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1914; --surface: #16251E; --ink: #E8EEE4; --muted: #9DADA3; --line: #2A3D33;
+  --green: #2E6B52; --green-ink: #F3F6EF; --red: #E5604F; --red-ink: #1C0B08; --gold: #E8B84A;
+  --gold-soft: #3A3217; --tip-bg: #2B2A16; --ta: #57B58E; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 16px/1.5 var(--body);
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+button { font: inherit; color: inherit; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; border-radius: 6px; }
+[hidden] { display: none !important; }
+
+.wrap { max-width: 640px; margin: 0 auto; padding-inline: var(--gutter); }
+
+/* ---------- Testata: targa stradale ---------- */
+header.top { padding-top: calc(14px + env(safe-area-inset-top, 0px)); }
+.targa {
+  background: var(--surface); color: var(--ink);
+  border: 2px solid var(--ink); border-radius: 10px; padding: 5px;
+  box-shadow: 0 1px 0 var(--line);
+}
+.targa-in {
+  border: 1px solid var(--ink); border-radius: 6px; padding: 14px 14px 12px;
+  display: grid; gap: 4px;
+}
+.titolo { display: block; width: 100%; height: auto; border-radius: 4px; background: #F7F1E3; }
+.targa-in:has(.titolo) { padding: 6px 6px 10px; gap: 8px; }
+.targa .rione { text-align: center; }
+.icone { display: flex; justify-content: space-between; font-size: 1.5rem; line-height: 1; padding-bottom: 6px; margin-bottom: 4px; border-bottom: 1px dashed var(--line); }
+.icone span:nth-child(odd) { transform: rotate(-6deg); }
+.icone span:nth-child(even) { transform: rotate(6deg); }
+.targa .rione { font: 600 .72rem/1 var(--body); letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+.targa h1 {
+  margin: 2px 0 0; font: 400 clamp(2rem, 9.5vw, 3rem)/1 var(--display); text-wrap: balance; letter-spacing: .005em;
+}
+.targa .sub { margin: 6px 0 0; color: var(--muted); font-size: .95rem; }
+.headrow { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; margin-top: 12px; }
+.hotel { font-size: .85rem; color: var(--muted); min-width: 0; }
+.hotel b { color: var(--ink); font-weight: 600; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--ink);
+  background: transparent; font-weight: 600; font-size: .92rem; text-decoration: none; cursor: pointer;
+  white-space: nowrap;
+}
+.btn svg { width: 18px; height: 18px; flex: none; }
+.btn-install { background: var(--red); border-color: var(--red); color: var(--red-ink); }
+.btn-audio { background: var(--green); border-color: var(--green); color: var(--green-ink); }
+.btn-ta { background: var(--ta); border-color: var(--ta); color: #fff; }
+:root[data-theme="dark"] .btn-ta { color: #07140e; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn-ta { color: #07140e; } }
+.btn:active { transform: translateY(1px); }
+.btn.is-playing { background: var(--red); border-color: var(--red); color: var(--red-ink); }
+
+/* ---------- Schede dei giorni ---------- */
+nav.tabs {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: var(--bg); padding-block: 12px 10px; margin-top: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.tabs-in { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.tab {
+  min-height: 48px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--surface);
+  display: grid; place-content: center; text-align: center; line-height: 1.1; cursor: pointer; padding: 4px 2px;
+}
+.tab small { display: block; font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.tab strong { font: 400 1.15rem/1.1 var(--display); }
+.tab[aria-selected="true"] { background: var(--green); border-color: var(--green); color: var(--green-ink); }
+.tab[aria-selected="true"] small { color: inherit; opacity: .8; }
+.tab.oggi small::after { content: " · oggi"; color: var(--gold); }
+
+/* ---------- Giorno ---------- */
+.day-head { padding-block: 22px 6px; }
+.day-head h2 { margin: 0; font: 400 1.9rem/1.05 var(--display); text-wrap: balance; }
+.day-head p { margin: 6px 0 0; color: var(--muted); }
+.alert {
+  margin-top: 14px; padding: 10px 12px; border-radius: 10px; background: var(--gold-soft);
+  border: 1px solid var(--gold); font-size: .92rem;
+}
+
+.timeline { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 0; position: relative; }
+.timeline > li { position: relative; padding-left: 26px; padding-bottom: 14px; min-width: 0; }
+.timeline > li::before { /* filo della giornata */
+  content: ""; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: var(--line);
+}
+.timeline > li:last-child::before { bottom: 50%; }
+.timeline > li.stop::after { /* pallino */
+  content: ""; position: absolute; left: 0; top: 16px; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--bg); border: 3px solid var(--green);
+}
+.timeline > li.stop.cena::after, .timeline > li.stop.start::after { background: var(--red); border-color: var(--red); }
+.timeline > li.stop.opt::after { border-style: dashed; }
+
+.walk { display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: .86rem; padding: 2px 0 2px; }
+.walk svg { width: 16px; height: 16px; flex: none; }
+.walk span { min-width: 0; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; min-width: 0; }
+.card h3 { margin: 0; font: 400 1.3rem/1.15 var(--display); text-wrap: balance; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.tag {
+  font: 600 .72rem/1 var(--body); letter-spacing: .05em; text-transform: uppercase; padding: 5px 8px; border-radius: 6px;
+  border: 1px solid var(--line); color: var(--muted); background: transparent;
+}
+.tag.free { color: var(--green); border-color: currentColor; }
+.tag.pay  { color: var(--red); border-color: currentColor; }
+.tag.book { background: var(--gold-soft); border-color: var(--gold); color: var(--ink); }
+.tag.time { font-family: var(--mono); text-transform: none; letter-spacing: 0; }
+:root[data-theme="dark"] .tag.free { color: #7FD0A9; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tag.free { color: #7FD0A9; } }
+.desc { margin: 10px 0 0; }
+.see { margin: 10px 0 0; }
+.see h4 { margin: 0 0 4px; font: 600 .72rem/1 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.see ul { margin: 6px 0 0; padding-left: 1.1em; display: grid; gap: 2px; }
+.see li::marker { color: var(--gold); }
+.note { margin: 10px 0 0; font-size: .92rem; color: var(--muted); }
+.tip {
+  margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: var(--tip-bg); font-size: .92rem;
+}
+.tip b { font-weight: 700; }
+.tip a.inline { font-weight: 600; text-underline-offset: 3px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.srcs { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 10px; font-size: .85rem; }
+.srcs a { color: var(--muted); text-underline-offset: 3px; }
+
+/* ---------- Utile ---------- */
+.sec { padding-block: 22px 0; }
+.sec h2 { margin: 0 0 10px; font: 400 1.5rem/1.1 var(--display); }
+.list { display: grid; gap: 8px; }
+.check {
+  display: flex; gap: 12px; align-items: flex-start; padding: 12px; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 12px; cursor: pointer; min-width: 0;
+}
+.check input { width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--green); flex: none; }
+.check span { min-width: 0; }
+.check small { display: block; color: var(--muted); font-size: .85rem; }
+.check input:checked + span { text-decoration: line-through; color: var(--muted); }
+.facts { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.facts li { padding: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; min-width: 0; }
+.facts b { display: block; font-weight: 700; }
+.audio-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 10px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.audio-row div { min-width: 0; }
+.audio-row small { color: var(--muted); display: block; }
+.btn.small { min-height: 40px; padding: 0 14px; font-size: .85rem; }
+.offline-all { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+.offline-all p { margin: 0; color: var(--muted); font-size: .9rem; flex: 1 1 200px; }
+.foot { margin-top: 28px; color: var(--muted); font-size: .85rem; }
+
+
+/* ---------- Biglietti del treno ---------- */
+.treni { display: grid; gap: 8px; margin-bottom: 10px; }
+.treno { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; min-width: 0; }
+.treno .dir { font: 600 .72rem/1 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.treno .rotta { margin: 6px 0 0; font: 400 1.15rem/1.25 var(--display); text-wrap: balance; }
+.treno p { margin: 4px 0 0; font-size: .9rem; color: var(--muted); }
+.treno .pnr { font-family: var(--mono); color: var(--ink); font-weight: 600; letter-spacing: .04em; }
+.pax { display: grid; gap: 8px; }
+.pax-row { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; display: grid; gap: 8px; min-width: 0; }
+.pax-row b { font-weight: 700; }
+.pax-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pax-btns .btn { flex-direction: column; gap: 0; min-height: 52px; padding: 6px 8px; border-radius: 12px; white-space: normal; text-align: center; line-height: 1.2; }
+.pax-btns .btn small { font-weight: 500; font-size: .76rem; opacity: .9; }
+.viewer { position: fixed; inset: 0; z-index: 60; background: #0B100D; display: grid; grid-template-rows: auto 1fr; }
+.viewer-bar { display: flex; align-items: center; gap: 10px; padding: calc(10px + env(safe-area-inset-top, 0px)) var(--gutter) 10px; color: #fff; }
+.viewer-bar span { flex: 1; min-width: 0; font-weight: 600; }
+.viewer-bar .btn { color: #fff; border-color: #fff; min-height: 40px; }
+.viewer-body { overflow: auto; padding: 0 0 calc(16px + env(safe-area-inset-bottom, 0px)); display: grid; align-content: start; justify-items: center; }
+.viewer-body img { width: 100%; max-width: 720px; height: auto; background: #fff; }
+.viewer-hint { color: #cfd8d2; font-size: .8rem; padding: 10px var(--gutter) 0; text-align: center; }
+
+/* ---------- Player ---------- */
+.player {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+  background: var(--green); color: var(--green-ink);
+  padding: 10px var(--gutter) calc(10px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -4px 18px rgba(0,0,0,.25);
+}
+.player-in { max-width: 640px; margin: 0 auto; display: grid; gap: 6px; }
+.p-top { display: flex; align-items: center; gap: 10px; }
+.p-title { flex: 1; min-width: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.p-title small { display: block; font-weight: 400; opacity: .8; font-size: .75rem; }
+.p-btn {
+  width: 46px; height: 46px; border-radius: 50%; border: 0; background: transparent; color: inherit;
+  display: grid; place-items: center; cursor: pointer; flex: none;
+}
+.p-btn svg { width: 24px; height: 24px; }
+.p-btn.main { background: var(--gold); color: #1A1505; width: 50px; height: 50px; }
+.p-btn.main svg { width: 26px; height: 26px; }
+.p-seek { display: flex; align-items: center; gap: 10px; font: .75rem var(--mono); font-variant-numeric: tabular-nums; }
+.p-seek input { flex: 1; min-width: 0; accent-color: var(--gold); height: 28px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* ---------- Come installare ---------- */
+.sheet-back { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.55); display: grid; align-items: end; }
+.sheet {
+  background: var(--surface); border-radius: 18px 18px 0 0; padding: 20px var(--gutter) calc(20px + env(safe-area-inset-bottom, 0px));
+  max-width: 640px; width: 100%; margin: 0 auto;
+}
+.sheet h2 { margin: 0 0 8px; font: 400 1.5rem/1.1 var(--display); }
+.sheet ol { padding-left: 1.2em; display: grid; gap: 6px; margin: 10px 0 16px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .panel { animation: rise .25s ease-out; }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+}
+</style>
+</head>
+<body>
+
+<header class="top wrap">
+  <div class="targa">
+    <div class="targa-in">
+      <h1 class="sr">6 romagnole a Roma</h1>
+      <img class="titolo" src="img/titolo.jpg" width="1200" height="655" alt="6 romagnole a Roma. Viaggi e sorrisi. Sei donne sorridenti davanti a Colosseo, San Pietro e Fontana di Trevi.">
+      <div class="rione">2–4 ottobre 2026</div>
+    </div>
+  </div>
+  <div class="headrow">
+    <div class="hotel"><b>Aenea Inn</b> · Via Urbana 156 · <a href="https://www.booking.com/hotel/it/aenea-superior-inn.it.html#tab-reviews" target="_blank" rel="noopener">Recensioni su Booking</a></div>
+    <button class="btn btn-install" id="installBtn" type="button" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg>
+      Installa l'app
+    </button>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Giorni del viaggio">
+  <div class="wrap">
+    <div class="tabs-in" role="tablist" id="tabs"></div>
+  </div>
+</nav>
+
+<main class="wrap" id="main" tabindex="-1"></main>
+
+<div class="player" id="player" hidden>
+  <div class="player-in">
+    <div class="p-top">
+      <div class="p-title" id="pTitle"></div>
+      <button class="p-btn" id="pBack" type="button" aria-label="Indietro di 15 secondi">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><text x="8" y="15.5" font-size="7" stroke="none" fill="currentColor" font-family="sans-serif" font-weight="700">15</text></svg>
+      </button>
+      <button class="p-btn main" id="pPlay" type="button" aria-label="Riproduci o metti in pausa"></button>
+      <button class="p-btn" id="pFwd" type="button" aria-label="Avanti di 15 secondi">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/><text x="8" y="15.5" font-size="7" stroke="none" fill="currentColor" font-family="sans-serif" font-weight="700">15</text></svg>
+      </button>
+      <button class="p-btn" id="pClose" type="button" aria-label="Chiudi audioguida">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="p-seek">
+      <span id="pCur">0:00</span>
+      <label class="sr" for="pRange">Posizione</label>
+      <input type="range" id="pRange" min="0" max="1000" value="0">
+      <span id="pDur">0:00</span>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-back" id="sheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetT">
+    <h2 id="sheetT">Installa l'app</h2>
+    <p id="sheetIntro">Il browser non ha proposto l'installazione automatica. Si fa a mano:</p>
+    <ol id="sheetSteps"></ol>
+    <button class="btn" id="sheetClose" type="button" style="width:100%">Ho capito</button>
+  </div>
+</div>
+
+<div class="viewer" id="viewer" hidden role="dialog" aria-modal="true" aria-label="Biglietto">
+  <div class="viewer-bar"><span id="viewerT"></span><button class="btn" id="viewerClose" type="button">Chiudi</button></div>
+  <div class="viewer-body"><img id="viewerImg" alt="Biglietto Trenitalia con codice QR"><p class="viewer-hint">Alzate la luminosità dello schermo. Potete ingrandire con due dita.</p></div>
+</div>
+
+<audio id="audio" preload="none"></audio>
+
+<script>
+'use strict';
+
+/* ================= DATI ================= */
+const maps = (q) => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+
+const AUDIO = {
+  'colosseo':               { t: 'Colosseo', mb: 2.4 },
+  'piazza-di-spagna':       { t: 'Piazza di Spagna e Trinità dei Monti', mb: 3.3 },
+  'san-pietro-in-vincoli':  { t: 'San Pietro in Vincoli', mb: 4.0 },
+  'pantheon':               { t: 'Pantheon', mb: 2.1 },
+  'san-luigi-dei-francesi': { t: 'San Luigi dei Francesi', mb: 3.1 },
+  'navona':                 { t: 'Piazza Navona', mb: 1.8 },
+  'campo-de-fiori':         { t: "Campo de' Fiori", mb: 3.1 },
+  'bocca-della-verita':     { t: 'Bocca della Verità', mb: 3.1 },
+  'castel-sant-angelo':     { t: "Castel Sant'Angelo", mb: 5.8 }
+};
+
+const DAYS = [
+  {
+    id: 'ven', short: 'Ven', num: '2', date: '2026-10-02', title: 'Venerdì 2 ottobre',
+    sub: 'Colosseo, Fori, Campidoglio, Piazza di Spagna e Trevi.',
+    items: [
+      { id: 'v-start', kind: 'start', title: 'Partenza da Aenea Inn', desc: "Via Urbana 156. Dalla Stazione Termini all'Aenea Inn sono 650 metri passando per Via Cavour.", maps: [['Mappa', 'Aenea Inn, Via Urbana 156, Roma']],
+        links: [['Recensioni su Booking', 'https://www.booking.com/hotel/it/aenea-superior-inn.it.html#tab-reviews']] },
+      { walk: 'A piedi verso il Colosseo · circa 1,2 km · 15–20 minuti' },
+      { id: 'v-colosseo', title: 'Colosseo (esterno)', tags: [['free', 'Esterno gratuito']], audio: 'colosseo',
+        links: [['Biglietti Colosseo, Foro e Palatino', 'https://colosseo.it/biglietti/colosseo-foro-romano-palatino/']] },
+      { id: 'v-arco', title: 'Arco di Costantino', tags: [['free', 'Gratuito'], ['time', '15 min']],
+        desc: "Si trova immediatamente davanti al Colosseo. Non serve entrare in un'area museale: si vede direttamente dall'esterno.",
+        see: ['il grande arco del 315 d.C.', 'i rilievi riutilizzati da monumenti di epoca precedente', 'la posizione spettacolare tra Colosseo e Palatino'] },
+      { id: 'v-foro', title: 'Foro Romano', tags: [['pay', '€18 biglietto ordinario'], ['book', 'Da acquistare sul posto']], maps: [['Mappa', 'Foro Romano, Roma']],
+        desc: "Entrate nell'area archeologica e seguite un percorso relativamente breve, concentrandovi sui punti principali.",
+        seeTitle: 'Da vedere assolutamente',
+        see: ['Arco di Settimio Severo', 'Tempio di Saturno', 'Basilica Giulia', 'Curia', 'Via Sacra', 'Tempio di Antonino e Faustina', 'Casa delle Vestali', 'Tempio di Vesta', 'Basilica di Massenzio'],
+        note: 'Il Palatino è compreso nel biglietto, quindi potreste visitarlo: richiede circa un’altra ora.',
+        links: [['Parco archeologico del Colosseo', 'https://colosseo.it/biglietti/colosseo-foro-romano-palatino/']] },
+      { walk: 'Dal Foro al Campidoglio · circa 700 m · una piccola deviazione molto interessante' },
+      { id: 'v-cordonata', title: 'Cordonata e Palazzo dei Conservatori', maps: [['Mappa', 'Palazzo dei Conservatori, Piazza del Campidoglio, Roma']],
+        desc: 'Prima di arrivare nella piazza del Campidoglio passate dalla Cordonata e fermatevi qualche minuto.',
+        see: ['Cordonata di Michelangelo', 'statue dei Dioscuri', 'Palazzo Senatorio', 'Palazzo dei Conservatori', 'Palazzo Nuovo', 'pavimentazione disegnata da Michelangelo'] },
+      { id: 'v-campidoglio', title: 'Campidoglio', tags: [['free', 'Gratuita']], maps: [['Mappa', 'Piazza del Campidoglio, Roma']],
+        desc: 'La piazza è uno dei grandi capolavori urbanistici di Michelangelo e merita una visita anche senza entrare nei musei.' },
+      { walk: 'Scendete dal Campidoglio verso Piazza Venezia' },
+      { id: 'v-traiana', title: 'Colonna Traiana e Piazza Venezia', tags: [['free', 'Gratuita · visita esterna']], maps: [['Mappa', 'Piazza Venezia, Roma']],
+        desc: 'Dedicate qualche minuto alla colonna e osservate il fregio a spirale, che racconta le guerre daciche di Traiano.' },
+      { id: 'v-vittoriano', title: 'Vittoriano · Altare della Patria', tags: [['free', 'Gratuito'], ['time', '9:30–19:30']],
+        desc: "Visita dall'esterno, oppure entrate nell'area del monumento per vedere il Milite Ignoto. Ultimo ingresso alle 18:45. Il cambio della guardia avviene ogni ora.",
+        links: [['Info e orari (VIVE)', 'https://vive.cultura.gov.it/it/info-e-orari-4']] },
+      { walk: 'Da Piazza Venezia imboccate Via del Corso' },
+      { id: 'v-sordi', title: 'Galleria Alberto Sordi', kind: 'opt', tags: [['', 'Facoltativa']], maps: [['Mappa', 'Galleria Alberto Sordi, Roma']],
+        desc: 'Una piccola deviazione: è praticamente sul percorso e richiede pochi minuti.' },
+      { id: 'v-condotti', title: 'Via Condotti', maps: [['Mappa', 'Via Condotti, Roma']],
+        seeTitle: 'Da vedere', see: ['Via Condotti', 'Piazza di Spagna', 'Fontana della Barcaccia'],
+        tip: ['Caffè storico', "Antico Caffè Greco, al civico 86: aperto dal 1760, da provare anche solo con un caffè al banco.", 'Antico Caffè Greco, Via Condotti 86, Roma'] },
+      { id: 'v-spagna', title: 'Piazza di Spagna e Trinità dei Monti', maps: [['Mappa', 'Piazza di Spagna, Roma']], audio: 'piazza-di-spagna',
+        see: ['Scalinata di Spagna', 'Chiesa di Trinità dei Monti'],
+        note: "Da verificare l'accessibilità quel giorno. Se la chiesa è aperta al pubblico vale la pena entrare brevemente: è uno dei punti panoramici più belli del percorso." },
+      { id: 'v-trevi', title: 'Fontana di Trevi', maps: [['Mappa', 'Fontana di Trevi, Roma']],
+        note: "Da verificare l'accessibilità: il biglietto dovrebbe costare 2 €." },
+      { walk: 'Rientro verso ristorante e Aenea Inn · da Trevi a Via Urbana 156 passando per il Quirinale e via Milano · circa 1,5 km, 20 minuti a piedi, oppure 5 minuti in taxi' },
+      { id: 'v-cena', kind: 'cena', title: 'Cena · Taverna Urbana', tags: [['free', 'Prenotato per 6']], maps: [['Mappa', 'Taverna Urbana, Roma']],
+        ta: 'https://www.tripadvisor.com/Restaurant_Review-g187791-d1176957-Reviews-Taverna_Urbana-Rome_Lazio.html' }
+    ]
+  },
+  {
+    id: 'sab', short: 'Sab', num: '3', date: '2026-10-03', title: 'Sabato 3 ottobre',
+    sub: 'Da San Pietro in Vincoli a Trastevere, passando per il centro storico.',
+    items: [
+      { id: 's-start', kind: 'start', title: 'Partenza da Aenea Inn', desc: 'Via Urbana 156.' },
+      { id: 's-spiv', title: 'San Pietro in Vincoli', tags: [['free', 'Ingresso gratuito'], ['time', '30 min']], maps: [['Mappa', 'Basilica di San Pietro in Vincoli, Roma']], audio: 'san-pietro-in-vincoli',
+        seeTitle: 'Da vedere soprattutto', see: ['Mosè di Michelangelo', 'catene di San Pietro', 'tomba di Giulio II'] },
+      { walk: 'Verso Piazza Venezia, senza fretta: invece della via diretta, una passeggiata tra i Fori Imperiali · Via Cavour → Largo Corrado Ricci → Via dei Fori Imperiali → Piazza Venezia' },
+      { id: 's-fori', title: 'Fori Imperiali', tags: [['free', 'Tutto esterno e gratuito']], maps: [['Via Alessandrina', 'Via Alessandrina, Roma']],
+        desc: 'Avrete l’opportunità di rivedere con calma dall’esterno alcuni monumenti visti più in fretta venerdì. In alternativa, passate più sulla destra da Via Alessandrina.',
+        seeTitle: 'Lungo il tragitto', see: ['Foro di Nerva', 'Foro di Augusto', 'Foro di Traiano', 'Colonna Traiana', 'Piazza Venezia'] },
+      { id: 's-domus', kind: 'opt', title: 'Domus Romane di Palazzo Valentini', tags: [['', 'Eventuale'], ['book', 'Prenotazione consigliata'], ['time', '≈ 1 ora']], maps: [['Mappa', 'Domus Romane di Palazzo Valentini, Foro Traiano 85, Roma']],
+        desc: 'Proprio accanto al Foro di Traiano, quindi senza deviazioni. Sotto Palazzo Valentini sono conservati resti di domus romane, con mosaici, pavimenti e ambienti valorizzati da una ricostruzione multimediale.',
+        see: ['non ripete la visita del Colosseo', 'vi fa vedere la Roma imperiale da una prospettiva completamente diversa'],
+        note: 'Sabato 10:00–19:00 secondo gli orari attualmente pubblicati. La visita è organizzata su turni. Tel. +39 06 87153153.',
+        links: [['Sito ufficiale', 'https://www.palazzovalentini.it/']] },
+      { id: 's-vittoriano', kind: 'opt', title: 'Piazza Venezia e Vittoriano', tags: [['', 'Terrazza delle Quadrighe, facoltativa'], ['pay', 'A pagamento']],
+        desc: 'Proseguite verso Piazza Venezia. La Terrazza delle Quadrighe è la terrazza panoramica del Vittoriano e offre una delle viste più interessanti sul centro di Roma.',
+        note: 'Piazza Venezia 3. Tel. +39 06 69994211.',
+        links: [['Terrazza panoramica (VIVE)', 'https://vive.cultura.gov.it/it/terrazza-panoramica']] },
+      { walk: 'Da Piazza Venezia a Sant’Ignazio · passeggiata di circa 1 km' },
+      { id: 's-ignazio', title: 'Sant’Ignazio di Loyola', tags: [['free', 'Ingresso gratuito'], ['time', '30 min']], maps: [['Mappa', 'Chiesa di Sant\'Ignazio di Loyola, Roma']],
+        desc: 'Qui vale assolutamente la pena entrare.', seeTitle: 'Da vedere', see: ['volta di Andrea Pozzo', 'finta cupola', 'prospettiva illusionistica', 'decorazione barocca'] },
+      { walk: 'Da Sant’Ignazio al Pantheon · solo circa 500 metri' },
+      { id: 's-pantheon', title: 'Pantheon', tags: [['pay', '€7'], ['book', 'Prenotazione consigliata il sabato'], ['time', '40–45 min']], maps: [['Mappa', 'Pantheon, Roma']], audio: 'pantheon',
+        see: ['cupola', 'oculo', 'tomba di Raffaello', 'tombe dei Savoia', 'struttura romana', 'pavimento e decorazioni'],
+        tip: ['Pausa', "Sant'Eustachio Il Caffè, a due passi, per il caffè con la gran crema. Per il gelato, Giolitti in Via degli Uffici del Vicario 40.", "Sant'Eustachio Il Caffè, Roma"] },
+      { walk: 'Dal Pantheon a San Luigi dei Francesi · circa 300 metri' },
+      { id: 's-luigi', title: 'San Luigi dei Francesi', tags: [['free', 'Ingresso gratuito'], ['book', 'Sabato chiusa 12:15–14:30'], ['time', '25–30 min']], maps: [['Mappa', 'Chiesa di San Luigi dei Francesi, Roma']], audio: 'san-luigi-dei-francesi',
+        desc: 'Una delle tappe più importanti del giorno: Caravaggio. A seconda dell’orario reale di arrivo decidete se entrare subito o attendere la riapertura.',
+        seeTitle: 'Cappella Contarelli', see: ['Vocazione di San Matteo', 'Martirio di San Matteo', 'San Matteo e l’angelo'] },
+      { id: 's-navona', title: 'Piazza Navona e pranzo', maps: [['Mappa', 'Piazza Navona, Roma']], audio: 'navona',
+        seeTitle: 'Da vedere', see: ['Fontana dei Quattro Fiumi', 'Fontana del Nettuno', 'Fontana del Moro', "Chiesa di Sant'Agnese in Agone"] },
+      { id: 's-agnese', title: 'Sant’Agnese in Agone', kind: 'opt', tags: [['free', 'Gratuita'], ['time', '15 min']], maps: [['Mappa', 'Sant\'Agnese in Agone, Roma']],
+        desc: 'Se è aperta, entrateci: visita molto interessante dal punto di vista barocco.' },
+      { walk: 'Da Piazza Navona a Campo de’ Fiori · passeggiata nel centro storico, con possibili soste per negozietti o vedute particolari' },
+      { id: 's-campo', title: 'Campo de’ Fiori', maps: [['Mappa', 'Campo de\' Fiori, Roma']], audio: 'campo-de-fiori',
+        desc: 'Il sabato è particolarmente interessante per il mercato.', seeTitle: 'Da vedere', see: ['mercato', 'statua di Giordano Bruno', 'palazzi storici della piazza'],
+        tip: ['Spuntino', "Forno Campo de' Fiori per un trancio di pizza bianca.", "Forno Campo de' Fiori, Roma"] },
+      { walk: 'Verso la Bocca della Verità · circa 1,8 km, 25 minuti · Ponte Sisto → Lungotevere → Isola Tiberina → Ponte Fabricio' },
+      { id: 's-bocca', title: 'Bocca della Verità e Santa Maria in Cosmedin', tags: [['free', 'Accesso gratuito'], ['time', 'fino alle 17:50']], maps: [['Mappa', 'Bocca della Verità, Roma']], audio: 'bocca-della-verita',
+        seeTitle: 'Da vedere a Santa Maria in Cosmedin', see: ['pavimento cosmatesco', 'schola cantorum', 'ciborio', 'mosaico', 'cripta, se accessibile'],
+        note: "Proprio di fronte, visibili dall'esterno: Tempio di Ercole Vincitore e Tempio di Portuno. L'orario indicato per il sabato arriva alle 17:50.",
+        links: [['Turismo Roma', 'https://www.turismoroma.it/it/luoghi/bocca-della-verit%C3%A0']] },
+      { walk: 'Verso Trastevere · circa 1,8 km · Ponte Palatino → Santa Cecilia → Santa Maria in Trastevere. Una passeggiata molto bella.' },
+      { id: 's-cecilia', title: 'Santa Cecilia in Trastevere', tags: [['free', 'Basilica gratuita']], maps: [['Mappa', 'Basilica di Santa Cecilia in Trastevere, Roma']],
+        desc: 'Una visita molto più interessante di un ulteriore museo.', seeTitle: 'Da vedere', see: ['statua di Santa Cecilia di Stefano Maderno', 'mosaico absidale', 'cripta', 'cortile del convento'] },
+      { walk: 'Da Santa Cecilia · Via di San Michele → Piazza in Piscinula → Piazza di Santa Maria in Trastevere' },
+      { id: 's-smt', title: 'Santa Maria in Trastevere e quartiere', tags: [['free', 'Ingresso gratuito']],
+        seeTitle: 'Da vedere soprattutto', see: ['mosaici dell’abside', 'mosaici della facciata', 'soffitto', 'pavimento cosmatesco'],
+        note: 'Intorno: vicoli, Piazza Trilussa e Ponte Sisto.',
+        tip: ['Spuntino', 'Supplì Roma, in Via di San Francesco a Ripa 137, per assaggiare il supplì prima di cena.', 'Supplì Roma, Via di San Francesco a Ripa 137, Roma'] },
+      { id: 's-cena', kind: 'cena', title: 'Cena · Osteria Martino Trastevere', tags: [['free', 'Prenotato per 6']], maps: [['Mappa', 'Osteria Martino Trastevere, Roma']],
+        ta: 'https://www.tripadvisor.com/Restaurant_Review-g187791-d27986363-Reviews-Osteria_Martino-Rome_Lazio.html',
+        note: 'Rientro consigliato in taxi.' },
+      { walk: 'Alternativa in autobus · Bus 170 dalla fermata Bocca della Verità (direzione Termini), ogni 11 minuti circa. Scendete a Nazionale/Quattro Fontane, poi circa 8 minuti a piedi fino a Via Urbana 156.' }
+    ]
+  },
+  {
+    id: 'dom', short: 'Dom', num: '4', date: '2026-10-04', title: 'Domenica 4 ottobre',
+    sub: 'San Pietro, la Cupola, Borgo e Castel Sant’Angelo.',
+    alert: 'Partite presto, non oltre le 8: la domenica San Pietro è molto frequentata.',
+    items: [
+      { id: 'd-start', kind: 'start', title: 'Partenza da Aenea Inn', desc: 'Da Via Urbana alla Metro A Termini sono 600 metri. Poi Metro A da Termini a Ottaviano; da Ottaviano circa 10–12 minuti a piedi fino a Piazza San Pietro. In tutto circa 35–40 minuti.', maps: [['Mappa · Termini', 'Stazione Termini Metro A, Roma']],
+        note: 'Il BIT costa €1,50 ed è valido 100 minuti. In alternativa usate direttamente Tap & Go con la carta contactless.',
+        links: [['ATAC · biglietti BIT', 'https://www.atac.roma.it/biglietti-e-abbonamenti/bit']] },
+      { id: 'd-conc', title: 'Via della Conciliazione', desc: 'Prima di entrare, percorretela lentamente: è una parte importante della visita. La prospettiva verso la Basilica e il colonnato del Bernini è spettacolare.' },
+      { id: 'd-basilica', title: 'Basilica di San Pietro', tags: [['free', 'Ingresso gratuito'], ['book', 'Meglio prima delle 9:30']],
+        desc: 'Dal 1° giugno 2026 la Basilica è aperta tutti i giorni dalle 7:00 alle 20:00, con ultimo accesso alle 19:15, compatibilmente con i controlli di sicurezza. La domenica possono esserci code importanti.',
+        seeTitle: 'Da vedere assolutamente', see: ['Pietà di Michelangelo', 'Baldacchino del Bernini', 'Altare papale', 'Cattedra di San Pietro', 'Monumento ad Alessandro VII', 'cupola vista dall’interno', 'statue e cappelle laterali', 'tomba di San Giovanni Paolo II'],
+        tip: ['Abbigliamento', 'Spalle e ginocchia devono essere coperte, anche per gli uomini: tenete in borsa una sciarpa leggera. Portate poche cose per facilitare i controlli di sicurezza.'],
+        note: "L'audioguida digitale è inclusa nel biglietto della Cupola.",
+        links: [['Orari della Basilica', 'https://www.basilicasanpietro.va/it/news/nuovo-orario-di-apertura-della-basilica-di-san-pietro']] },
+      { id: 'd-cupola', title: 'Cupola di San Pietro', tags: [['pay', 'A pagamento'], ['time', '7:30–17:00']],
+        desc: 'Aperta anche la domenica; l’orario invernale ufficiale è 7:30–17:00. Scegliete la Cupola con ascensore: elimina una parte della salita, ma il tratto finale resta a piedi. Il biglietto comprende anche l’accesso alla Basilica e l’audioguida digitale.',
+        note: 'La domenica non ci sono gli stessi slot di prenotazione online delle visite guidate della Basilica. Per la Cupola si può comprare il biglietto sul posto, ma la disponibilità degli slot può essere limitata.',
+        links: [['Orari della Cupola', 'https://www.basilicasanpietro.va/it/faq/quali-sono-gli-orari-di-apertura-della-cupola'], ['Basilica e Cupola', 'https://www.basilicasanpietro.va/it/faq/l-accesso-alla-cupola-include-anche-quello-alla-basilica'], ['Biglietti in loco', 'https://www.basilicasanpietro.va/it/faq/i-biglietti-per-laccesso-alla-cupola-possono-esser-acquistati-in-loco']] },
+      { id: 'd-piazza', title: 'Piazza San Pietro', seeTitle: 'Da vedere', see: ['Colonnato del Bernini', 'fontane', 'obelisco', 'facciata della Basilica', 'Porta Santa', 'Via della Conciliazione'] },
+      { id: 'd-borgo', kind: 'opt', title: 'Borgo Pio', tags: [['', 'Piccola deviazione']], maps: [['Mappa', 'Borgo Pio, Roma']],
+        desc: 'Molto più piacevole di una semplice passeggiata lungo le vie principali: permette di vedere il quartiere storico immediatamente alle spalle del Vaticano.' },
+      { walk: 'Borgo Pio → Via del Banco di Santo Spirito → Ponte Sant’Angelo · circa 1 km. È il percorso preferibile per arrivare a Castel Sant’Angelo.' },
+      { id: 'd-castel', title: 'Castel Sant’Angelo', tags: [['free', 'Gratuito la prima domenica del mese'], ['time', '9:00–19:30'], ['time', '1 h 15 – 1 h 30']], audio: 'castel-sant-angelo', maps: [['Mappa', 'Castel Sant\'Angelo, Roma']],
+        desc: 'Il 4 ottobre è la prima domenica del mese: l’ingresso è gratuito. Orario della domenica 9:00–19:30, ultimo ingresso 18:30.',
+        seeTitle: 'Percorso interno consigliato', see: ['Cortile dell’Angelo', 'rampe e passaggi della fortezza', 'Cortile dell’Apollo', 'appartamenti papali', 'sale affrescate', 'Passetto di Borgo, se accessibile', 'Terrazza dell’Angelo'],
+        note: 'Dalla terrazza si vedono San Pietro, il Vaticano, il Tevere, il centro di Roma e Ponte Sant’Angelo.',
+        links: [['Sito ufficiale', 'https://castelsantangelo.beniculturali.it/']] },
+      { id: 'd-ponte', title: 'Ponte Sant’Angelo e Lungotevere', maps: [['Mappa', 'Ponte Sant\'Angelo, Roma']],
+        desc: 'Attraversate il ponte e percorrete qualche centinaio di metri lungo il Tevere: è un tratto molto bello.',
+        seeTitle: 'Da vedere', see: ['statue degli angeli di Bernini e della sua scuola', 'Castel Sant’Angelo', 'prospettiva verso San Pietro'] },
+      { walk: 'Rientro verso Aenea Inn · consigliato: passeggiata da Castel Sant’Angelo a Ottaviano, Metro A fino a Termini, poi 12–15 minuti a piedi. In alternativa, taxi.' }
+    ]
+  }
+];
+
+
+const PAX = [
+  { n: 'Mara Ciappini',     a: ['9', '9D',  'mara-1'],     r: ['1', '8A',  'mara-2'], rNote: '1ª classe' },
+  { n: 'Flavia Bezzi',      a: ['9', '10D', 'flavia-1'],   r: ['8', '11D', 'flavia-2'] },
+  { n: 'Francesca Amadori', a: ['9', '9C',  'francesca-1'], r: ['8', '12D', 'flavia-2'] },
+  { n: 'Cinzia Casadei',    a: ['9', '10C', 'cinzia-1'],   r: ['8', '11C', 'flavia-3'] },
+  { n: 'Lidiana Guiducci',  a: ['9', '9B',  'lidiana-1'],  r: ['8', '12C', 'flavia-3'] },
+  { n: 'Roberta Calderoni', a: ['9', '10B', 'roberta-1'],  r: ['8', '10B', 'roberta-3'], da: 'Ravenna' }
+];
+
+const TODO = [
+  ['Foro Romano e Palatino', 'Biglietto da €18, da acquistare sul posto (venerdì).'],
+  ['Pantheon', 'Prenotazione consigliata per sabato. Biglietto €7.'],
+  ['Domus Romane di Palazzo Valentini', 'Facoltativa. Prenotazione consigliata, visita a turni.'],
+  ['Fontana di Trevi', 'Verificare accessibilità e biglietto (circa 2 €).'],
+  ['Trinità dei Monti', 'Verificare se la chiesa è aperta al pubblico.'],
+    ['Cupola di San Pietro', 'Biglietto in loco, slot limitati la domenica. Arrivare presto.']
+];
+
+const FACTS = [
+  ['Metro e bus', 'BIT €1,50, valido 100 minuti, oppure Tap & Go con carta contactless.'],
+  ['Taxi', 'Usate solo i taxi bianchi ufficiali, alle fermate o con un’app di prenotazione.'],
+  ['Chiese e Vaticano', 'Spalle e ginocchia coperte. Una sciarpa leggera risolve.'],
+  ['Scarpe', 'Sampietrini e molti chilometri a piedi: scarpe comode.'],
+  ['Acqua', 'Le fontanelle di Roma, i «nasoni», danno acqua potabile gratis: riempite la borraccia.'],
+  ['Borseggiatori', 'Attenzione a Termini, sui bus affollati e nelle code. Borse chiuse, davanti a voi.'],
+  ['Emergenze', 'Numero unico europeo: 112.']
+];
+
+/* ================= UTILITÀ ================= */
+const $ = (s, r = document) => r.querySelector(s);
+function h(tag, attrs, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v === false || v == null) continue;
+    if (k === 'class') el.className = v;
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else el.setAttribute(k, v === true ? '' : v);
+  }
+  for (const k of kids.flat()) if (k != null && k !== false) el.append(k.nodeType ? k : document.createTextNode(k));
+  return el;
+}
+function svg(path, extra) {
+  const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('fill', 'none'); s.setAttribute('stroke', 'currentColor');
+  s.setAttribute('stroke-width', '2'); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('stroke-linejoin', 'round');
+  s.setAttribute('aria-hidden', 'true'); s.innerHTML = path; if (extra) s.setAttribute('class', extra); return s;
+}
+const ICON = {
+  pin: '<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  play: '<path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/>',
+  pause: '<path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor" stroke="none"/>',
+  ear: '<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>',
+  star: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+  foot: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  dl: '<path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14"/>'
+};
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ignorato */ } }
+};
+const fmt = (s) => { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+
+/* ================= RENDER ================= */
+const audioEl = $('#audio');
+let currentKey = null;
+
+function audioBtn(key) {
+  const b = h('button', { class: 'btn btn-audio', type: 'button', 'data-audio': key, 'aria-label': 'Audioguida: ' + AUDIO[key].t },
+    svg(ICON.ear), h('span', null, 'Audioguida'));
+  b.addEventListener('click', () => playAudio(key));
+  return b;
+}
+
+function stopCard(it) {
+  const card = h('div', { class: 'card' });
+  card.append(h('h3', null, it.title));
+  if (it.tags && it.tags.length) card.append(h('div', { class: 'tags' }, it.tags.map(([k, l]) => h('span', { class: 'tag ' + k }, l))));
+  if (it.desc) card.append(h('p', { class: 'desc' }, it.desc));
+  if (it.see) card.append(h('div', { class: 'see' }, h('h4', null, it.seeTitle || 'Da vedere'), h('ul', null, it.see.map((s) => h('li', null, s)))));
+  if (it.note) card.append(h('p', { class: 'note' }, it.note));
+  if (it.tip) {
+    const [label, text, q] = it.tip;
+    card.append(h('div', { class: 'tip' }, h('b', null, 'Consiglio · ' + label + '. '), text, q ? [' ', h('a', { class: 'inline', href: maps(q), target: '_blank', rel: 'noopener' }, 'Mappa')] : null));
+  }
+  const acts = [];
+  (it.maps || []).forEach(([l, q]) => acts.push(h('a', { class: 'btn', href: maps(q), target: '_blank', rel: 'noopener' }, svg(ICON.pin), l)));
+  if (it.audio) acts.push(audioBtn(it.audio));
+  if (it.ta) acts.push(h('a', { class: 'btn btn-ta', href: it.ta, target: '_blank', rel: 'noopener' }, svg(ICON.star), 'Tripadvisor'));
+  if (acts.length) card.append(h('div', { class: 'actions' }, acts));
+  if (it.links) card.append(h('div', { class: 'srcs' }, it.links.map(([l, u]) => h('a', { href: u, target: '_blank', rel: 'noopener' }, l + ' ↗'))));
+  return card;
+}
+
+function renderDay(d) {
+  const frag = document.createDocumentFragment();
+  frag.append(h('div', { class: 'day-head' }, h('h2', null, d.title), h('p', null, d.sub), d.alert ? h('div', { class: 'alert' }, d.alert) : null));
+  const ol = h('ol', { class: 'timeline' });
+  d.items.forEach((it) => {
+    if (it.walk) {
+      ol.append(h('li', { class: 'walk-li' }, h('div', { class: 'walk' }, svg(ICON.foot), h('span', null, it.walk))));
+    } else {
+      ol.append(h('li', { class: 'stop ' + (it.kind || '') }, stopCard(it)));
+    }
+  });
+  frag.append(ol);
+  return frag;
+}
+
+function renderUtile() {
+  const frag = document.createDocumentFragment();
+  frag.append(h('div', { class: 'day-head' }, h('h2', null, 'Utile'), h('p', null, 'Cose da prenotare, da sapere e da portare.')));
+
+  // Biglietti del treno
+  const treni = h('div', { class: 'treni' },
+    h('div', { class: 'treno' }, h('div', { class: 'dir' }, 'Andata · venerdì 2 ottobre'),
+      h('p', { class: 'rotta' }, 'Rimini 06:52 → Roma Termini 11:00'),
+      h('p', null, 'Frecciargento 8851 · 2ª classe · carrozza 9'),
+      h('p', null, 'Roberta sale a Ravenna alle 06:08.'),
+      h('p', null, 'PNR ', h('span', { class: 'pnr' }, 'UBZW6N'), ' · Roberta ', h('span', { class: 'pnr' }, 'UB9YLN'))),
+    h('div', { class: 'treno' }, h('div', { class: 'dir' }, 'Ritorno · domenica 4 ottobre'),
+      h('p', { class: 'rotta' }, 'Roma Termini 17:25 → Rimini 21:29'),
+      h('p', null, 'Frecciargento 8852 · 2ª classe · carrozza 8 (Mara: carrozza 1, 1ª classe)'),
+      h('p', null, 'Roberta scende a Ravenna alle 22:14.'),
+      h('p', null, 'Il treno chiude le porte 1 minuto prima della partenza. Serve un documento di identità.')));
+  const pax = h('div', { class: 'pax' }, PAX.map((x) => h('div', { class: 'pax-row' },
+    h('b', null, x.n),
+    h('div', { class: 'pax-btns' },
+      h('button', { class: 'btn small', type: 'button', onclick: () => openTicket(x.n + ' · andata', x.a[2]) }, h('span', null, 'Andata'), h('small', null, 'Carr. ' + x.a[0] + ' · posto ' + x.a[1])),
+      h('button', { class: 'btn small', type: 'button', onclick: () => openTicket(x.n + ' · ritorno', x.r[2]) }, h('span', null, 'Ritorno'), h('small', null, 'Carr. ' + x.r[0] + ' · posto ' + x.r[1]))))));
+  frag.append(h('section', { class: 'sec' }, h('h2', null, 'Biglietti del treno'), treni, pax,
+    h('p', { class: 'note' }, 'Toccate Andata o Ritorno per aprire il biglietto con il codice QR. Funzionano anche senza rete. Il ritorno di Flavia e Francesca, e quello di Cinzia e Lidiana, sono biglietti di coppia: il QR è quello della propria riga.')));
+
+  // Da prenotare
+  const done = JSON.parse(store.get('todo') || '{}');
+  const list = h('div', { class: 'list' });
+  TODO.forEach(([t, s], i) => {
+    const cb = h('input', { type: 'checkbox', id: 'todo' + i });
+    cb.checked = !!done[i];
+    cb.addEventListener('change', () => { done[i] = cb.checked; store.set('todo', JSON.stringify(done)); });
+    list.append(h('label', { class: 'check', for: 'todo' + i }, cb, h('span', null, t, h('small', null, s))));
+  });
+  frag.append(h('section', { class: 'sec' }, h('h2', null, 'Da prenotare o verificare'), list));
+
+  // Audioguide offline
+  const box = h('div', { class: 'list', id: 'offlineList' });
+  const total = Object.values(AUDIO).reduce((a, x) => a + x.mb, 0).toFixed(0);
+  const allBtn = h('button', { class: 'btn small', type: 'button', id: 'dlAll' }, svg(ICON.dl), 'Scarica tutte (' + total + ' MB)');
+  allBtn.addEventListener('click', downloadAll);
+  Object.keys(AUDIO).forEach((k) => {
+    const b = h('button', { class: 'btn small', type: 'button', 'data-dl': k }, svg(ICON.dl), 'Scarica');
+    b.addEventListener('click', () => toggleOffline(k));
+    box.append(h('div', { class: 'audio-row' }, h('div', null, AUDIO[k].t, h('small', null, AUDIO[k].mb + ' MB')), b));
+  });
+  const sec = h('section', { class: 'sec', id: 'offlineSec' }, h('h2', null, 'Audioguide offline'),
+    h('div', { class: 'offline-all' }, h('p', null, 'Scaricatele con il wifi dell’hotel: poi funzionano anche senza rete.'), allBtn), box);
+  frag.append(sec);
+
+  // Da sapere
+  frag.append(h('section', { class: 'sec' }, h('h2', null, 'Da sapere'),
+    h('ul', { class: 'facts' }, FACTS.map(([t, s]) => h('li', null, h('b', null, t), s)))));
+
+  frag.append(h('p', { class: 'foot' }, 'Orari, prezzi e aperture sono quelli del programma. Prima di partire controllateli sui siti ufficiali: cambiano spesso.'));
+  return frag;
+}
+
+/* ================= SCHEDE ================= */
+const TABS = [...DAYS.map((d) => ({ id: d.id, small: d.short, strong: d.num, date: d.date })), { id: 'utile', small: 'Utile', strong: '+' }];
+const tabsEl = $('#tabs');
+const main = $('#main');
+
+function todayId() {
+  const t = new Date(); const iso = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+  const d = DAYS.find((x) => x.date === iso); return d ? d.id : null;
+}
+
+function show(id, scroll) {
+  if (!TABS.some((t) => t.id === id)) id = 'ven';
+  tabsEl.querySelectorAll('.tab').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.id === id)));
+  main.replaceChildren();
+  const panel = h('div', { class: 'panel', role: 'tabpanel' });
+  panel.append(id === 'utile' ? renderUtile() : renderDay(DAYS.find((d) => d.id === id)));
+  main.append(panel);
+  store.set('tab', id);
+  if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
+  syncPlayingButtons();
+  if (id === 'utile') refreshOfflineUI();
+  if (scroll) window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+const today = todayId();
+TABS.forEach((t) => {
+  const b = h('button', { class: 'tab' + (t.id === today ? ' oggi' : ''), type: 'button', role: 'tab', 'data-id': t.id, 'aria-selected': 'false' },
+    h('small', null, t.small), h('strong', null, t.strong));
+  b.addEventListener('click', () => show(t.id, true));
+  tabsEl.append(b);
+});
+
+/* ================= AUDIO ================= */
+const player = $('#player'), pTitle = $('#pTitle'), pPlay = $('#pPlay'), pRange = $('#pRange'), pCur = $('#pCur'), pDur = $('#pDur');
+
+function setPlayIcon(playing) {
+  pPlay.replaceChildren(svg(playing ? ICON.pause : ICON.play));
+}
+function syncPlayingButtons() {
+  document.querySelectorAll('[data-audio]').forEach((b) => {
+    const on = b.dataset.audio === currentKey && !audioEl.paused;
+    b.classList.toggle('is-playing', on);
+    b.querySelector('span').textContent = on ? 'In pausa' : (b.dataset.audio === currentKey && audioEl.currentTime > 0 ? 'Riprendi' : 'Audioguida');
+  });
+}
+function playAudio(key) {
+  if (currentKey === key) { audioEl.paused ? audioEl.play() : audioEl.pause(); return; }
+  currentKey = key;
+  audioEl.src = 'audio/' + key + '.mp3';
+  pTitle.replaceChildren(AUDIO[key].t, h('small', null, 'Audioguida'));
+  player.hidden = false;
+  pRange.value = 0; pCur.textContent = '0:00'; pDur.textContent = '…';
+  audioEl.play().catch(() => {});
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: AUDIO[key].t, artist: '6 romagnole a Roma', album: 'Audioguide',
+      artwork: [{ src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' }]
+    });
+    navigator.mediaSession.setActionHandler('play', () => audioEl.play());
+    navigator.mediaSession.setActionHandler('pause', () => audioEl.pause());
+    navigator.mediaSession.setActionHandler('seekbackward', () => skip(-15));
+    navigator.mediaSession.setActionHandler('seekforward', () => skip(15));
+  }
+}
+function skip(n) { audioEl.currentTime = Math.min(Math.max(0, audioEl.currentTime + n), audioEl.duration || 1e9); }
+pPlay.addEventListener('click', () => (audioEl.paused ? audioEl.play() : audioEl.pause()));
+$('#pBack').addEventListener('click', () => skip(-15));
+$('#pFwd').addEventListener('click', () => skip(15));
+$('#pClose').addEventListener('click', () => { audioEl.pause(); audioEl.removeAttribute('src'); audioEl.load(); currentKey = null; player.hidden = true; syncPlayingButtons(); });
+audioEl.addEventListener('play', () => { setPlayIcon(true); syncPlayingButtons(); });
+audioEl.addEventListener('pause', () => { setPlayIcon(false); syncPlayingButtons(); });
+audioEl.addEventListener('ended', () => { setPlayIcon(false); syncPlayingButtons(); });
+audioEl.addEventListener('loadedmetadata', () => { pDur.textContent = fmt(audioEl.duration); });
+audioEl.addEventListener('timeupdate', () => {
+  pCur.textContent = fmt(audioEl.currentTime);
+  if (audioEl.duration && !pRange.matches(':active')) pRange.value = Math.round(audioEl.currentTime / audioEl.duration * 1000);
+});
+pRange.addEventListener('input', () => { if (audioEl.duration) audioEl.currentTime = pRange.value / 1000 * audioEl.duration; });
+audioEl.addEventListener('error', () => { if (currentKey) pDur.textContent = 'non disponibile'; });
+setPlayIcon(false);
+
+/* ================= AUDIO OFFLINE ================= */
+const swOk = 'serviceWorker' in navigator && 'caches' in window;
+const audioUrl = (k) => new URL('audio/' + k + '.mp3', location.href).pathname;
+let swReady = false;
+
+async function cachedSet() {
+  try { const c = await caches.open('romagnole-audio-v1'); return new Set((await c.keys()).map((r) => new URL(r.url).pathname)); }
+  catch (e) { return new Set(); }
+}
+async function refreshOfflineUI() {
+  const sec = $('#offlineSec'); if (!sec) return;
+  if (!swOk || !swReady) { sec.hidden = true; return; }
+  sec.hidden = false;
+  const have = await cachedSet();
+  let n = 0;
+  sec.querySelectorAll('[data-dl]').forEach((b) => {
+    const on = have.has(audioUrl(b.dataset.dl)); if (on) n++;
+    b.replaceChildren(on ? document.createTextNode('✓ Offline · rimuovi') : svg(ICON.dl), on ? '' : 'Scarica');
+    b.dataset.state = on ? 'on' : 'off'; b.disabled = false;
+  });
+  const all = $('#dlAll'); if (all) all.disabled = n === Object.keys(AUDIO).length;
+}
+async function toggleOffline(k) {
+  const b = document.querySelector('[data-dl="' + k + '"]');
+  const c = await caches.open('romagnole-audio-v1');
+  if (b.dataset.state === 'on') { await c.delete(audioUrl(k)); return refreshOfflineUI(); }
+  b.disabled = true; b.replaceChildren('Scarico…');
+  try {
+    const r = await fetch('audio/' + k + '.mp3', { cache: 'no-store' });
+    if (!r.ok) throw new Error(r.status);
+    await c.put(audioUrl(k), r);
+  } catch (e) { b.replaceChildren('Riprova'); b.disabled = false; return; }
+  refreshOfflineUI();
+}
+async function downloadAll() {
+  const all = $('#dlAll'); all.disabled = true;
+  const have = await cachedSet(); let i = 0; const keys = Object.keys(AUDIO).filter((k) => !have.has(audioUrl(k)));
+  for (const k of keys) { all.replaceChildren('Scarico ' + (++i) + ' di ' + keys.length + '…'); await toggleOffline(k); }
+  all.replaceChildren(svg(ICON.dl), 'Scarica tutte (' + Object.values(AUDIO).reduce((a, x) => a + x.mb, 0).toFixed(0) + ' MB)');
+  refreshOfflineUI();
+}
+
+if (swOk) {
+  navigator.serviceWorker.register('sw.js').then(() => navigator.serviceWorker.ready).then(() => { swReady = true; refreshOfflineUI(); }).catch(() => { if (!deferred) installBtn.hidden = true; });
+}
+
+
+/* ================= BIGLIETTI ================= */
+const viewer = $('#viewer');
+function openTicket(title, file) {
+  $('#viewerT').textContent = title;
+  $('#viewerImg').src = 'biglietti/' + file + '.jpg';
+  viewer.hidden = false;
+  try { navigator.wakeLock && navigator.wakeLock.request('screen').catch(() => {}); } catch (e) { /* ignorato */ }
+}
+$('#viewerClose').addEventListener('click', () => { viewer.hidden = true; });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') viewer.hidden = true; });
+
+/* ================= INSTALLAZIONE ================= */
+const installBtn = $('#installBtn'), sheet = $('#sheet');
+let deferred = null;
+const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+if (!standalone) installBtn.hidden = false;
+
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e; installBtn.hidden = false; });
+window.addEventListener('appinstalled', () => { deferred = null; installBtn.hidden = true; });
+installBtn.addEventListener('click', async () => {
+  if (deferred) {
+    deferred.prompt();
+    try { await deferred.userChoice; } catch (e) { /* ignorato */ }
+    deferred = null;
+    return;
+  }
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  $('#sheetSteps').replaceChildren(...(ios
+    ? ['Toccate il pulsante Condividi di Safari.', 'Scegliete «Aggiungi alla schermata Home».']
+    : ['Aprite questa pagina con Chrome.', 'Toccate il menu ⋮ in alto a destra.', 'Scegliete «Installa app» (o «Aggiungi a schermata Home»).']).map((t) => h('li', null, t)));
+  sheet.hidden = false;
+});
+$('#sheetClose').addEventListener('click', () => { sheet.hidden = true; });
+sheet.addEventListener('click', (e) => { if (e.target === sheet) sheet.hidden = true; });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') sheet.hidden = true; });
+
+/* ================= AVVIO ================= */
+const start = (location.hash || '').slice(1) || today || store.get('tab') || 'ven';
+show(start, false);
+window.addEventListener('hashchange', () => { const id = location.hash.slice(1); if (TABS.some((t) => t.id === id)) show(id, true); });
+</script>
+</body>
+</html>
